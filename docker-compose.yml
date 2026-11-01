@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  springboot-app:
+    build: .
+    container_name: project2_springboot
+    restart: always
+    ports:
+      - "9002:9002"
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/ptskart
+      - SPRING_DATASOURCE_USERNAME=devtoos
+      - SPRING_DATASOURCE_PASSWORD=DevTools$123
+      # Add any custom property from your application.properties here:
+      # - MY_CUSTOM_PROPERTY=some_value
