@@ -15,7 +15,7 @@ services:
       - SERVER_PORT=9002
       - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:mysql://host.docker.internal:3306/ptskart?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
       - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME:-devtoos}
-      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-DevTools$123}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-DevTools$$123}
       - BREVO_USER=${BREVO_USER:-bbd375001@smtp-brevo.com}
       - BREVO_SMTP_KEY=${BREVO_SMTP_KEY:-}
       - SENDER_EMAIL=${SENDER_EMAIL:-info@batohidriver.com}
@@ -31,10 +31,10 @@ services:
   #   ports:
   #     - "3306:3306"
   #   environment:
-  #     MYSQL_ROOT_PASSWORD: DevTools$123
+  #     MYSQL_ROOT_PASSWORD: DevTools$$123
   #     MYSQL_DATABASE: ptskart
   #     MYSQL_USER: devtoos
-  #     MYSQL_PASSWORD: DevTools$123
+  #     MYSQL_PASSWORD: DevTools$$123
   #   volumes:
   #     - mysql-data:/var/lib/mysql
   #   networks:
