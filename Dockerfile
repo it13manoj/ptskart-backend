@@ -1,30 +1,27 @@
-# --- Stage 1: Build the application ---
-FROM eclipse-temurin:21-jdk-alpine AS build
+# --- Stage 1: Build the JAR with Maven & OpenJDK 21 ---
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 
-# Copy Maven wrapper and project description files
-COPY mvnw .
-COPY .mvn .mvn
+# Cache dependencies
 COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Download dependencies (cached if pom.xml doesn't change)
-RUN ./mvnw dependency:go-offline -B
-
-# Copy the source code
+# Copy source code and build jar
 COPY src src
+RUN mvn clean package -DskipTests
 
-# Build the jar file (skipping tests for faster deployment)
-RUN ./mvnw package -DskipTests
-
-# --- Stage 2: Run the application ---
-FROM eclipse-temurin:17-jre-alpine
+# --- Stage 2: Lightweight Production Runtime (Temurin 21 JRE) ---
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-# Copy the built jar from the first stage
+# Run as non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
 COPY --from=build /app/target/*.jar app.jar
+RUN chown -R appuser:appgroup /app
 
-# Spring Boot runs on port 8080 by default
-EXPOSE 8080
+USER appuser
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+EXPOSE 9002
+
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
