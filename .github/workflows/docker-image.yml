@@ -73,12 +73,12 @@ jobs:
             # Navigate to your project directory on the server
             cd /var/www/html/cpanel/hosting_data/www/api.ptskart.com
 
-            # Authenticate with GHCR using a Personal Access Token stored in GitHub Secrets
+            # Authenticate with GHCR using your GitHub PAT secret
             echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            # Pull the latest image and restart using docker-compose to keep all environment variables
-            docker compose pull
-            docker compose up -d --force-recreate
+            # Pull latest updates and restart containers using legacy docker-compose command
+            docker-compose pull
+            docker-compose up -d --force-recreate
 
             # Clean up old unused images
             docker image prune -f
