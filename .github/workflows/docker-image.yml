@@ -70,27 +70,15 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
-            # Authenticate with GitHub Packages on the server
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            # Navigate to your project directory on the server
+            cd /var/www/html/cpanel/hosting_data/www/api.ptskart.com
 
-            # Set repository image name in lowercase
-            REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-            IMAGE_URL="ghcr.io/${REPO_LOWER}:latest"
+            # Authenticate with GHCR using a Personal Access Token stored in GitHub Secrets
+            echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            # Pull latest image
-            docker pull $IMAGE_URL
-
-            # Stop and remove existing container if running
-            docker stop ptskart-backend || true
-            docker rm ptskart-backend || true
-
-            # Run updated container
-            docker run -d \
-              --name ptskart-backend \
-              --restart always \
-              --add-host=host.docker.internal:host-gateway \
-              -p 9002:9002 \
-              $IMAGE_URL
+            # Pull the latest image and restart using docker-compose to keep all environment variables
+            docker compose pull
+            docker compose up -d --force-recreate
 
             # Clean up old unused images
             docker image prune -f
